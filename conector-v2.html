@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conector Beefit Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+      @import url(https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap);
+      body { font-family: 'Inter', sans-serif; }
+      /* Adiciona uma transição suave para o aparecimento dos modais */
+      .modal {
+        transition: opacity 0.3s ease-in-out;
+      }
+      .modal-content {
+        transition: transform 0.3s ease-in-out;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
+    <div id="webcrumbs">
+      
+      <!-- Modal de Configurações -->
+      <div id="settings-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl p-6 max-w-md mx-4 shadow-2xl w-full transform scale-95">
+          <h2 class="text-xl font-semibold mb-4 flex items-center">
+            <svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            Configurações da API
+          </h2>
+          <form id="settings-form" class="space-y-4">
+            <div>
+              <label for="api-url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">URL da sua API</label>
+              <input type="url" id="api-url" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700" placeholder="https://api.seuservidor.com" required>
+            </div>
+            <div>
+              <label for="api-key" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sua API Key</label>
+              <input type="text" id="api-key" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700" placeholder="Chave de acesso da API" required>
+            </div>
+            <div class="flex justify-end gap-2 pt-4">
+              <button type="button" id="close-settings" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                Cancelar
+              </button>
+              <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg">
+                Salvar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tutorial Modal -->
+      <div id="tutorial-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl p-6 max-w-md mx-4 shadow-2xl transform scale-95">
+          <h2 class="text-xl font-semibold mb-4 flex items-center">
+             <svg class="w-6 h-6 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+            Como Conectar seu WhatsApp
+          </h2>
+          <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">1</div><p class="ml-3">Se for seu primeiro acesso, clique no ícone de engrenagem ⚙️ e insira a <b>URL da sua API</b> e sua <b>API Key</b>.</p></div>
+            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">2</div><p class="ml-3">Digite o <b>Nome da Instância</b> que deseja conectar.</p></div>
+            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">3</div><p class="ml-3">Clique no botão <b>"Gerar QR Code"</b>.</p></div>
+            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">4</div><p class="ml-3">Abra o WhatsApp no seu celular, vá em <b>Configurações > Aparelhos conectados</b>.</p></div>
+            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">5</div><p class="ml-3">Toque em <b>"Conectar um aparelho"</b> e aponte a câmera para o QR Code na tela.</p></div>
+          </div>
+          <button id="close-tutorial" class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg">Entendi!</button>
+        </div>
+      </div>
+
+      <!-- Conteúdo Principal -->
+      <div class="min-h-screen flex items-center justify-center font-sans p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md p-8 transition-all duration-300">
+          <header class="text-center mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <!-- Botão de Tutorial -->
+                <button id="open-tutorial" title="Mostrar tutorial" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </button>
+              <div class="flex-1 flex justify-center items-center gap-2">
+                 <svg class="h-8 w-8 text-green-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.35 3.45 16.86L2.06 21.94L7.31 20.55C8.76 21.33 10.37 21.79 12.04 21.79C17.5 21.79 21.95 17.34 21.95 11.88C21.95 9.27 20.92 6.8 19.13 4.99C17.34 3.2 14.88 2.18 12.23 2.02L12.04 2M12.04 3.65C16.56 3.65 20.3 7.39 20.3 11.91C20.3 16.43 16.56 20.14 12.04 20.14C10.53 20.14 9.09 19.72 7.85 19L7.22 18.65L3.8 19.78L4.95 16.45L4.57 15.79C3.85 14.58 3.48 13.2 3.48 11.88C3.48 7.42 7.06 3.65 12.04 3.65M9.42 6.55L8.48 6.55L6.96 11.96L8.53 11.96L8.94 10.59H11.41L11.82 11.96L13.39 11.96L11.87 6.55H10.93L9.42 6.55M10.18 9.59L10.88 7.42L11.53 9.59H10.18Z"/></svg>
+                 <span class="text-xl font-bold text-gray-800 dark:text-white">Conector API</span>
+              </div>
+              <div class="flex items-center gap-2">
+                 <!-- Botão de Configurações -->
+                <button id="open-settings" title="Configurações da API" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </button>
+                 <!-- Botão de Tema -->
+                <button id="theme-toggle" title="Alternar tema" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600">
+                    <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+              </div>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">Conecte seu WhatsApp</p>
+            <div class="mt-4 w-16 h-1 bg-blue-500 mx-auto rounded-full"></div>
+          </header>
+          
+          <div class="space-y-6" id="connection-form">
+            <div>
+              <label for="instance" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nome da Instância</label>
+              <input type="text" id="instance" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="minha-instancia-01" required>
+            </div>
+            <button class="w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 transition-all duration-200 transform hover:shadow-lg flex items-center justify-center gap-2" id="generate-qr">
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2v1h1V5h-1zM13 12a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1v-3a1 1 0 00-1-1h-3zm1 2v1h1v-1h-1z" clip-rule="evenodd"></path></svg>
+              Gerar QR Code
+            </button>
+          </div>
+
+           <div id="qr-display" class="hidden mt-8 text-center">
+            <div class="bg-white dark:bg-gray-700 rounded-2xl shadow-lg overflow-hidden">
+              <div class="p-6 space-y-4">
+                <div id="qrcode" class="bg-white w-48 h-48 mx-auto flex items-center justify-center rounded-xl shadow-inner">
+                  <div id="loading-spinner" class="hidden">
+                    <svg class="animate-spin h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                  </div>
+                  <canvas id="qrcodeCanvas" style="display: none;"></canvas>
+                </div>
+                <div id="countdown" class="text-sm text-gray-600 dark:text-gray-400 mt-2">Atualizando em: <span class="font-medium">30s</span></div>
+                <div class="flex items-center justify-center gap-2 text-gray-600 dark:text-gray-300">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                  <p class="text-sm font-medium">Escaneie com seu WhatsApp</p>
+                </div>
+              </div>
+              <!-- Botão Cancelar Adicionado Aqui -->
+              <div class="px-6 pb-4">
+                <button id="reset-btn" class="w-full bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-200 flex items-center justify-center gap-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  Cancelar
+                </button>
+              </div>
+              <div id="connection-status" class="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-700">
+                <div class="flex items-center justify-center text-xs text-gray-500 dark:text-gray-400">
+                  <svg class="w-4 h-4 mr-1 animate-pulse" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 3.636a1 1 0 010 1.414 7 7 0 000 9.9 1 1 0 11-1.414 1.414 9 9 0 010-12.728 1 1 0 011.414 0zm9.9 0a1 1 0 011.414 0 9 9 0 010 12.728 1 1 0 11-1.414-1.414 7 7 0 000-9.9 1 1 0 010-1.414zM7.879 6.464a1 1 0 010 1.414 3 3 0 000 4.243 1 1 0 11-1.415 1.414 5 5 0 010-7.07 1 1 0 011.415 0zm4.242 0a1 1 0 011.415 0 5 5 0 010 7.072 1 1 0 01-1.415-1.415 3 3 0 000-4.242 1 1 0 010-1.415z" clip-rule="evenodd"></path></svg>
+                  Aguardando conexão...
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="status-display" class="hidden mt-6"></div>
+          <div id="error-display" class="hidden mt-6"></div>
+          <div id="profile-actions" class="hidden mt-6"></div>
+           <footer class="mt-8 pt-4 border-t border-gray-100 dark:border-gray-700 text-center">
+            <p class="text-xs text-gray-500 dark:text-gray-400">Integração Segura com Evolution API</p>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- CONTROLES DOS MODAIS E TEMA ---
+      const settingsModal = document.getElementById('settings-modal');
+      const tutorialModal = document.getElementById('tutorial-modal');
+      const openSettingsBtn = document.getElementById('open-settings');
+      const closeSettingsBtn = document.getElementById('close-settings');
+      const openTutorialBtn = document.getElementById('open-tutorial');
+      const closeTutorialBtn = document.getElementById('close-tutorial');
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = document.getElementById('theme-icon');
+
+      const apiUrlInput = document.getElementById('api-url');
+      const apiKeyInput = document.getElementById('api-key');
+      const settingsForm = document.getElementById('settings-form');
+      const generateQrBtn = document.getElementById('generate-qr');
+      const instanceInput = document.getElementById('instance');
+      const resetBtn = document.getElementById('reset-btn');
+
+      // Funções para abrir/fechar modais com animação
+      const openModal = (modal) => {
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+          modal.classList.remove('opacity-0');
+          modal.querySelector('.modal-content').classList.remove('scale-95');
+        }, 10);
+      };
+
+      const closeModal = (modal) => {
+        modal.classList.add('opacity-0');
+        modal.querySelector('.modal-content').classList.add('scale-95');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+      };
+
+      openSettingsBtn.addEventListener('click', () => openModal(settingsModal));
+      closeSettingsBtn.addEventListener('click', () => closeModal(settingsModal));
+      openTutorialBtn.addEventListener('click', () => openModal(tutorialModal));
+      closeTutorialBtn.addEventListener('click', () => {
+        closeModal(tutorialModal);
+        localStorage.setItem('tutorialSeen', 'true');
+      });
+
+      // --- GERENCIAMENTO DE CONFIGURAÇÕES (API e Chave) ---
+      const loadSettings = () => {
+        const savedUrl = localStorage.getItem('apiBaseUrl');
+        const savedKey = localStorage.getItem('apiKey');
+        if (savedUrl) apiUrlInput.value = savedUrl;
+        if (savedKey) apiKeyInput.value = savedKey;
+
+        // Se for o primeiro acesso, abre as configurações
+        if (!savedUrl || !savedKey) {
+          openModal(settingsModal);
+        }
+      };
+
+      settingsForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        localStorage.setItem('apiBaseUrl', apiUrlInput.value.trim());
+        localStorage.setItem('apiKey', apiKeyInput.value.trim());
+        closeModal(settingsModal);
+        const statusDisplay = document.getElementById('status-display');
+        statusDisplay.classList.remove('hidden');
+        updateStatusDisplay('success', 'Configurações salvas com sucesso!');
+        setTimeout(() => statusDisplay.classList.add('hidden'), 3000);
+      });
+
+      // --- GERENCIAMENTO DE TEMA ---
+      const setTheme = (theme) => {
+        localStorage.setItem('theme', theme);
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+          themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>`;
+        } else {
+          document.documentElement.classList.remove('dark');
+          themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>`;
+        }
+      };
+
+      themeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        setTheme(isDark ? 'light' : 'dark');
+      });
+      
+      const initTheme = () => {
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (savedTheme) setTheme(savedTheme);
+        else setTheme(systemPrefersDark ? 'dark' : 'light');
+      };
+      
+      // --- LÓGICA PRINCIPAL DA API ---
+      let countdownInterval;
+
+      // Função para reiniciar o processo
+      const resetProcess = () => {
+          stopCountdown();
+          document.getElementById('qr-display').classList.add('hidden');
+          document.getElementById('status-display').classList.add('hidden');
+          document.getElementById('error-display').classList.add('hidden');
+          document.getElementById('connection-form').classList.remove('hidden');
+          instanceInput.value = '';
+          
+          const canvas = document.getElementById('qrcodeCanvas');
+          const context = canvas.getContext('2d');
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          canvas.style.display = 'none';
+          document.getElementById('loading-spinner').classList.add('hidden');
+          
+          updateStatusDisplay('info', 'Processo reiniciado.');
+          setTimeout(() => document.getElementById('status-display').classList.add('hidden'), 2000);
+      };
+
+      const updateStatusDisplay = (type, message) => {
+          const statusDisplay = document.getElementById('status-display');
+          const colors = {
+              success: { bg: 'bg-green-50 dark:bg-green-900', border: 'border-green-200 dark:border-green-800', text: 'text-green-700 dark:text-green-300', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>' },
+              error: { bg: 'bg-red-50 dark:bg-red-900', border: 'border-red-200 dark:border-red-800', text: 'text-red-700 dark:text-red-300', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>' },
+              info: { bg: 'bg-blue-50 dark:bg-blue-900', border: 'border-blue-200 dark:border-blue-800', text: 'text-blue-700 dark:text-blue-300', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>' }
+          };
+          const c = colors[type];
+          statusDisplay.innerHTML = `
+              <div class="${c.bg} ${c.border} rounded-lg p-4">
+                  <div class="flex items-center justify-center">
+                      <svg class="h-5 w-5 ${c.text} mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">${c.icon}</svg>
+                      <p class="${c.text} text-sm font-medium">${message}</p>
+                  </div>
+              </div>`;
+          statusDisplay.classList.remove('hidden');
+      };
+
+      const stopCountdown = () => clearInterval(countdownInterval);
+
+      const startCountdown = (callback) => {
+          stopCountdown();
+          let timeLeft = 30;
+          const countdownElement = document.getElementById('countdown').querySelector('span');
+          countdownElement.textContent = `${timeLeft}s`;
+          countdownInterval = setInterval(() => {
+              timeLeft--;
+              countdownElement.textContent = `${timeLeft}s`;
+              if (timeLeft <= 0) {
+                  stopCountdown();
+                  callback();
+              }
+          }, 1000);
+      };
+
+      const generateQRCode = async () => {
+          const baseUrl = apiUrlInput.value.trim();
+          const apiKey = apiKeyInput.value.trim();
+          const instance = instanceInput.value.trim();
+
+          document.getElementById('loading-spinner').classList.remove('hidden');
+          document.getElementById('qrcodeCanvas').style.display = 'none';
+
+          try {
+              const response = await fetch(`${baseUrl}/instance/connect/${instance}`, {
+                  headers: { 'apikey': apiKey }
+              });
+
+              if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
+              
+              const data = await response.json();
+              if (!data.code) throw new Error('QR Code não recebido da API.');
+
+              const canvas = document.getElementById('qrcodeCanvas');
+              QRCode.toCanvas(canvas, data.code, { width: 192, margin: 1 }, (error) => {
+                  document.getElementById('loading-spinner').classList.add('hidden');
+                  if (error) {
+                      console.error(error);
+                      updateStatusDisplay('error', 'Falha ao renderizar QR Code.');
+                  } else {
+                      canvas.style.display = 'block';
+                      updateStatusDisplay('success', 'QR Code gerado. Escaneie por favor.');
+                      startCountdown(generateQRCode);
+                  }
+              });
+          } catch (error) {
+              console.error(error);
+              document.getElementById('loading-spinner').classList.add('hidden');
+              updateStatusDisplay('error', `Falha ao gerar QR Code: ${error.message}`);
+          }
+      };
+
+      generateQrBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          if (!apiUrlInput.value || !apiKeyInput.value) {
+              updateStatusDisplay('error', 'Por favor, configure a URL e a API Key primeiro.');
+              openModal(settingsModal);
+              return;
+          }
+          if (!instanceInput.value) {
+              updateStatusDisplay('error', 'Por favor, informe o nome da instância.');
+              return;
+          }
+          
+          document.getElementById('connection-form').classList.add('hidden');
+          document.getElementById('qr-display').classList.remove('hidden');
+          generateQRCode();
+      });
+
+      resetBtn.addEventListener('click', resetProcess);
+
+      // --- INICIALIZAÇÃO DA PÁGINA ---
+      initTheme();
+      loadSettings();
+      if (!localStorage.getItem('tutorialSeen')) {
+        openModal(tutorialModal);
+      }
+    });
+    </script>
+  </body>
+</html>
+
