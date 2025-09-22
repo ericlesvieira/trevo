@@ -96,7 +96,7 @@
             Como Reconectar
           </h2>
           <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
-            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">1</div><p class="ml-3">Digite o <b>Nome da Instância</b> que deseja reconectar.</p></div>
+            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">1</div><p class="ml-3">O <b>Nome da Instância</b> já estará preenchido. Apenas confirme se está correto.</p></div>
             <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">2</div><p class="ml-3">Clique no botão <b>"Reconectar via Chatwoot"</b>.</p></div>
             <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">3</div><p class="ml-3">Um novo <b>QR Code</b> será enviado para sua caixa de entrada no Chatwoot.</p></div>
             <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">4</div><p class="ml-3">Abra o WhatsApp no seu celular, vá em <b>Aparelhos conectados</b> e escaneie o código.</p></div>
@@ -126,18 +126,22 @@
                 </button>
               </div>
             </div>
-            <p class="text-gray-600 dark:text-gray-300 text-sm">Conecte seu WhatsApp à Evolution API</p>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">Reconecte sua instância com um clique.</p>
             <div class="mt-4 w-16 h-1 bg-blue-500 mx-auto rounded-full"></div>
           </header>
           
-          <div class="space-y-6" id="connection-form">
+          <div class="space-y-4" id="connection-form">
             <div>
               <label for="instance" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nome da Instância</label>
-              <input type="text" id="instance" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="minha-instancia-01" required>
+              <input type="text" id="instance" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Carregando..." required readonly>
             </div>
             <button class="w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 transition-all duration-200 transform hover:shadow-lg flex items-center justify-center gap-2" id="connect-chatwoot">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
               Reconectar via Chatwoot
+            </button>
+            <button class="w-full bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors flex items-center justify-center gap-2" id="check-status">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M12 21v-1m-4.636-3.364l.707-.707m0-9.192l-.707-.707"></path></svg>
+                Verificar Status da Conexão
             </button>
           </div>
 
@@ -172,6 +176,7 @@
 
       const settingsForm = document.getElementById('settings-form');
       const connectChatwootBtn = document.getElementById('connect-chatwoot');
+      const checkStatusBtn = document.getElementById('check-status');
       const instanceInput = document.getElementById('instance');
 
       // --- CONTROLES DOS MODAIS E TEMA ---
@@ -228,6 +233,7 @@
         chatwootTokenInput.value = localStorage.getItem('chatwootToken') || '';
         chatwootAccountIdInput.value = localStorage.getItem('chatwootAccountId') || '';
         chatwootInboxIdInput.value = localStorage.getItem('chatwootInboxId') || '';
+        instanceInput.value = localStorage.getItem('instanceName') || '';
         
         chatwootAutoCreateCheck.checked = localStorage.getItem('chatwootAutoCreate') !== 'false';
         chatwootReopenConversationCheck.checked = localStorage.getItem('chatwootReopenConversation') !== 'false';
@@ -282,16 +288,16 @@
           statusDisplay.classList.remove('hidden');
       };
       
-      const validateInputs = () => {
+      const validateInputs = (checkChatwoot = false) => {
           if (!localStorage.getItem('apiBaseUrl') || !localStorage.getItem('apiKey')) {
               updateStatusDisplay('error', 'Configuração da API não encontrada. Use o link de configuração.');
               return false;
           }
           if (!instanceInput.value) {
-              updateStatusDisplay('error', 'Por favor, informe o nome da instância.');
+              updateStatusDisplay('error', 'Nome da instância não configurado. Use o link de configuração.');
               return false;
           }
-          if (!localStorage.getItem('chatwootUrl') || !localStorage.getItem('chatwootToken') || !localStorage.getItem('chatwootAccountId') || !localStorage.getItem('chatwootInboxId')) {
+          if (checkChatwoot && (!localStorage.getItem('chatwootUrl') || !localStorage.getItem('chatwootToken') || !localStorage.getItem('chatwootAccountId') || !localStorage.getItem('chatwootInboxId'))) {
               updateStatusDisplay('error', 'Configurações do Chatwoot incompletas. Use o link de configuração.');
               return false;
           }
@@ -299,7 +305,7 @@
       };
       
       const connectViaChatwoot = async () => {
-          if (!validateInputs()) return;
+          if (!validateInputs(true)) return;
 
           const baseUrl = localStorage.getItem('apiBaseUrl');
           const apiKey = localStorage.getItem('apiKey');
@@ -312,7 +318,6 @@
                   statusDisplay.classList.add('hidden');
               }
           }, 4000);
-
 
           try {
               const payload = {
@@ -355,8 +360,44 @@
           }
       };
 
+      const checkConnectionStatus = async () => {
+        if (!validateInputs(false)) return;
+
+        const baseUrl = localStorage.getItem('apiBaseUrl');
+        const apiKey = localStorage.getItem('apiKey');
+        const instance = instanceInput.value;
+
+        updateStatusDisplay('info', 'Verificando status...');
+
+        try {
+            const response = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
+                headers: { 'apikey': apiKey }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(()=> ({}));
+                throw new Error(errorData.message || `A API retornou um erro ${response.status}`);
+            }
+
+            const data = await response.json();
+            const state = data.instance.state;
+
+            if (state === 'open') {
+                updateStatusDisplay('success', 'Status da Conexão: CONECTADO');
+            } else if (state === 'close') {
+                updateStatusDisplay('error', 'Status da Conexão: DESCONECTADO');
+            } else {
+                updateStatusDisplay('info', `Status da Conexão: ${state}`);
+            }
+        } catch (error) {
+            console.error("Erro ao verificar status:", error);
+            updateStatusDisplay('error', `Falha ao verificar status: ${error.message}`);
+        }
+    };
+
       // --- EVENT LISTENERS ---
       connectChatwootBtn.addEventListener('click', connectViaChatwoot);
+      checkStatusBtn.addEventListener('click', checkConnectionStatus);
 
       // --- INICIALIZAÇÃO ---
       initTheme();
