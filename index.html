@@ -266,6 +266,7 @@
         localStorage.setItem('chatwootToken', chatwootTokenInput.value.trim());
         localStorage.setItem('chatwootAccountId', chatwootAccountIdInput.value.trim());
         localStorage.setItem('chatwootInboxId', chatwootInboxIdInput.value.trim());
+        localStorage.setItem('chatwootNameInbox', document.getElementById('chatwoot-name-inbox')?.value.trim() || '');
         localStorage.setItem('chatwootAutoCreate', chatwootAutoCreateCheck.checked);
         localStorage.setItem('chatwootReopenConversation', chatwootReopenConversationCheck.checked);
         localStorage.setItem('chatwootSignMsg', chatwootSignMsgCheck.checked);
@@ -332,6 +333,11 @@
                   conversationPending: localStorage.getItem('chatwootConversationPending') === 'true'
               };
               
+              const nameInbox = localStorage.getItem('chatwootNameInbox');
+              if (nameInbox && nameInbox.trim() !== '') {
+                  payload.nameInbox = nameInbox.trim();
+              }
+
               const response = await fetch(`${baseUrl}/chatwoot/set/${instance}`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', 'apikey': apiKey },
