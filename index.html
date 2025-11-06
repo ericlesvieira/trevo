@@ -3,88 +3,30 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conector WhatsApp Evolution API</title>
+    <title>Conector Chat Beefit</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       @import url(https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap);
       body { font-family: 'Inter', sans-serif; }
       .modal { transition: opacity 0.3s ease-in-out; }
       .modal-content { transition: transform 0.3s ease-in-out; }
-      .toggle-checkbox:checked { right: 0; border-color: #3b82f6; }
-      .toggle-checkbox:checked + .toggle-label { background-color: #3b82f6; }
     </style>
   </head>
   <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
     <div id="webcrumbs">
       
-      <!-- Modal de Configurações (Apenas para o admin, via gerador de links) -->
-      <div id="settings-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
-        <div class="modal-content bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl p-6 max-w-md mx-4 shadow-2xl w-full transform scale-95 overflow-y-auto max-h-screen">
-          <h2 class="text-xl font-semibold mb-4 flex items-center">
-            <svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-            Configurações
-          </h2>
-          <form id="settings-form" class="space-y-4">
-            <div>
-              <label for="api-url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">URL da sua API</label>
-              <input type="url" id="api-url" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700" placeholder="https://api.seuservidor.com" required>
-            </div>
-            <div>
-              <label for="api-key" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sua API Key</label>
-              <input type="password" id="api-key" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700" placeholder="Chave de acesso da API" required>
-            </div>
-            <div class="pt-2 border-t border-gray-200 dark:border-gray-700">
-                <p class="text-sm font-semibold text-gray-600 dark:text-gray-300 my-2">Configuração do Chatwoot</p>
-                 <div>
-                    <label for="chatwoot-url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">URL do Chatwoot</label>
-                    <input type="url" id="chatwoot-url" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700" placeholder="https://chatwoot.seuservidor.com">
-                </div>
-                 <div class="mt-4">
-                    <label for="chatwoot-token" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Token do Chatwoot</label>
-                    <input type="password" id="chatwoot-token" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700" placeholder="Token do agente ou conta">
-                </div>
-                <div class="mt-4 grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="chatwoot-account-id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ID da Conta</label>
-                        <input type="text" id="chatwoot-account-id" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700" placeholder="Ex: 1">
-                    </div>
-                    <div>
-                        <label for="chatwoot-inbox-id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ID da Caixa de Entrada</label>
-                        <input type="text" id="chatwoot-inbox-id" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700" placeholder="Ex: 2">
-                    </div>
-                </div>
-                 <div class="mt-4 space-y-3">
-                    <div class="flex items-center justify-between relative">
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 pr-4">Criar contato automaticamente</span>
-                        <input type="checkbox" id="chatwoot-auto-create" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
-                        <label for="chatwoot-auto-create" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer w-12"></label>
-                    </div>
-                     <div class="flex items-center justify-between relative">
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 pr-4">Reabrir conversas</span>
-                        <input type="checkbox" id="chatwoot-reopen-conversation" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
-                         <label for="chatwoot-reopen-conversation" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer w-12"></label>
-                    </div>
-                     <div class="flex items-center justify-between relative">
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 pr-4">Assinar mensagens</span>
-                        <input type="checkbox" id="chatwoot-sign-msg" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
-                        <label for="chatwoot-sign-msg" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer w-12"></label>
-                    </div>
-                    <div class="flex items-center justify-between relative">
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 pr-4">Manter conversas pendentes</span>
-                        <input type="checkbox" id="chatwoot-conversation-pending" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
-                        <label for="chatwoot-conversation-pending" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer w-12"></label>
-                    </div>
-                </div>
-            </div>
-            <div class="flex justify-end gap-2 pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
-              <button type="button" id="close-settings" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
-                Cancelar
-              </button>
-              <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg">
-                Salvar
-              </button>
-            </div>
-          </form>
+      <!-- Modal de Exibição do Código de Pareamento -->
+      <div id="pairing-code-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl p-6 max-w-sm mx-4 shadow-2xl transform scale-95">
+          <h2 class="text-xl font-semibold mb-4 text-center">Código de Pareamento</h2>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-6 text-center">
+            No seu WhatsApp, vá em "Aparelhos Conectados" > "Conectar com número de telefone" e digite o código abaixo.
+          </p>
+          <div class="my-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+            <span id="pairing-code" class="text-4xl font-bold tracking-widest text-blue-600 dark:text-blue-400">--- ---</span>
+          </div>
+          <p id="pairing-countdown" class="text-sm text-gray-500 text-center">Este código expira em 5 minutos.</p>
+          <button id="close-pairing-modal" class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg">Fechar</button>
         </div>
       </div>
 
@@ -93,13 +35,12 @@
         <div class="modal-content bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl p-6 max-w-md mx-4 shadow-2xl transform scale-95">
           <h2 class="text-xl font-semibold mb-4 flex items-center">
              <svg class="w-6 h-6 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-            Como Reconectar
+            Como Usar a Ferramenta
           </h2>
           <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
-            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">1</div><p class="ml-3">O <b>Nome da Instância</b> já estará preenchido. Apenas confirme se está correto.</p></div>
-            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">2</div><p class="ml-3">Clique no botão <b>"Reconectar via Chatwoot"</b>.</p></div>
-            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">3</div><p class="ml-3">Um novo <b>QR Code</b> será enviado para sua caixa de entrada no Chatwoot.</p></div>
-            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">4</div><p class="ml-3">Abra o WhatsApp no seu celular, vá em <b>Aparelhos conectados</b> e escaneie o código.</p></div>
+            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">1</div><p class="ml-3"><b>Verificar Status:</b> Clique para saber se a conexão está ativa (Verde) ou inativa (Vermelho).</p></div>
+            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">2</div><p class="ml-3"><b>Solicitar Código:</b> Se estiver desconectado, Solicite código de pareamento Um código aparecerá na tela.</p></div>
+            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">3</div><p class="ml-3">No seu celular, vá em <b>WhatsApp > Aparelhos Conectados > Conectar com número de telefone</b> e digite o código.</p></div>
           </div>
           <button id="close-tutorial" class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg">Entendi!</button>
         </div>
@@ -115,29 +56,20 @@
                 </button>
               <div class="flex-1 flex justify-center items-center gap-2">
                  <svg class="h-8 w-8 text-green-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.35 3.45 16.86L2.06 21.94L7.31 20.55C8.76 21.33 10.37 21.79 12.04 21.79C17.5 21.79 21.95 17.34 21.95 11.88C21.95 9.27 20.92 6.8 19.13 4.99C17.34 3.2 14.88 2.18 12.23 2.02L12.04 2M12.04 3.65C16.56 3.65 20.3 7.39 20.3 11.91C20.3 16.43 16.56 20.14 12.04 20.14C10.53 20.14 9.09 19.72 7.85 19L7.22 18.65L3.8 19.78L4.95 16.45L4.57 15.79C3.85 14.58 3.48 13.2 3.48 11.88C3.48 7.42 7.06 3.65 12.04 3.65M9.42 6.55L8.48 6.55L6.96 11.96L8.53 11.96L8.94 10.59H11.41L11.82 11.96L13.39 11.96L11.87 6.55H10.93L9.42 6.55M10.18 9.59L10.88 7.42L11.53 9.59H10.18Z"/></svg>
-                 <span class="text-xl font-bold text-gray-800 dark:text-white">Conector API</span>
+                 <span class="text-xl font-bold text-gray-800 dark:text-white">Conector Chat</span>
               </div>
-              <div class="flex items-center gap-2">
-                <button id="open-settings" title="Configurações da API" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                </button>
                 <button id="theme-toggle" title="Alternar tema" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600">
                     <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                 </button>
-              </div>
             </div>
-            <p class="text-gray-600 dark:text-gray-300 text-sm">Reconecte sua instância com um clique.</p>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">Ferramenta de Conexão</p>
             <div class="mt-4 w-16 h-1 bg-blue-500 mx-auto rounded-full"></div>
           </header>
           
           <div class="space-y-4" id="connection-form">
-            <div>
-              <label for="instance" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nome da Instância</label>
-              <input type="text" id="instance" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Carregando..." required readonly>
-            </div>
-            <button class="w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 transition-all duration-200 transform hover:shadow-lg flex items-center justify-center gap-2" id="connect-chatwoot">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-              Reconectar via Chatwoot
+            <button class="w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 transition-all duration-200 transform hover:shadow-lg flex items-center justify-center gap-2" id="get-pairing-code">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+              Solicitar Código de Pareamento
             </button>
             <button class="w-full bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors flex items-center justify-center gap-2" id="check-status">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M12 21v-1m-4.636-3.364l.707-.707m0-9.192l-.707-.707"></path></svg>
@@ -146,7 +78,7 @@
           </div>
 
           <div id="status-display" class="hidden mt-6"></div>
-           <footer class="mt-8 pt-4 border-t border-gray-100 dark:border-gray-700 text-center"><p class="text-xs text-gray-500 dark:text-gray-400">Integração Segura com Evolution API</p></footer>
+           <footer class="mt-8 pt-4 border-t border-gray-100 dark:border-gray-700 text-center"><p class="text-xs text-gray-500 dark:text-gray-400">Integração com UAU-ZAPI</p></footer>
         </div>
       </div>
     </div>
@@ -154,30 +86,21 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
       // --- ELEMENTOS DO DOM ---
-      const settingsModal = document.getElementById('settings-modal');
+      const pairingCodeModal = document.getElementById('pairing-code-modal');
+      const closePairingModalBtn = document.getElementById('close-pairing-modal');
+      const pairingCodeEl = document.getElementById('pairing-code');
+      const pairingCountdownEl = document.getElementById('pairing-countdown');
+      
       const tutorialModal = document.getElementById('tutorial-modal');
-      const openSettingsBtn = document.getElementById('open-settings');
-      const closeSettingsBtn = document.getElementById('close-settings');
       const openTutorialBtn = document.getElementById('open-tutorial');
       const closeTutorialBtn = document.getElementById('close-tutorial');
       const themeToggle = document.getElementById('theme-toggle');
       const themeIcon = document.getElementById('theme-icon');
 
-      const apiUrlInput = document.getElementById('api-url');
-      const apiKeyInput = document.getElementById('api-key');
-      const chatwootUrlInput = document.getElementById('chatwoot-url');
-      const chatwootTokenInput = document.getElementById('chatwoot-token');
-      const chatwootAccountIdInput = document.getElementById('chatwoot-account-id');
-      const chatwootInboxIdInput = document.getElementById('chatwoot-inbox-id');
-      const chatwootAutoCreateCheck = document.getElementById('chatwoot-auto-create');
-      const chatwootReopenConversationCheck = document.getElementById('chatwoot-reopen-conversation');
-      const chatwootSignMsgCheck = document.getElementById('chatwoot-sign-msg');
-      const chatwootConversationPendingCheck = document.getElementById('chatwoot-conversation-pending');
-
-      const settingsForm = document.getElementById('settings-form');
-      const connectChatwootBtn = document.getElementById('connect-chatwoot');
+      const getPairingCodeBtn = document.getElementById('get-pairing-code');
       const checkStatusBtn = document.getElementById('check-status');
-      const instanceInput = document.getElementById('instance');
+
+      let countdownInterval;
 
       // --- CONTROLES DOS MODAIS E TEMA ---
       const openModal = (modal) => {
@@ -189,18 +112,18 @@
       };
 
       const closeModal = (modal) => {
+        clearInterval(countdownInterval);
         modal.classList.add('opacity-0');
         modal.querySelector('.modal-content').classList.add('scale-95');
         setTimeout(() => modal.classList.add('hidden'), 300);
       };
 
-      openSettingsBtn.addEventListener('click', () => openModal(settingsModal));
-      closeSettingsBtn.addEventListener('click', () => closeModal(settingsModal));
       openTutorialBtn.addEventListener('click', () => openModal(tutorialModal));
       closeTutorialBtn.addEventListener('click', () => {
         closeModal(tutorialModal);
         localStorage.setItem('tutorialSeen', 'true');
       });
+      closePairingModalBtn.addEventListener('click', () => closeModal(pairingCodeModal));
 
       const setTheme = (theme) => {
         localStorage.setItem('theme', theme);
@@ -226,21 +149,6 @@
       };
 
       // --- GERENCIAMENTO DE CONFIGURAÇÕES ---
-      const loadSettings = () => {
-        apiUrlInput.value = localStorage.getItem('apiBaseUrl') || '';
-        apiKeyInput.value = localStorage.getItem('apiKey') || '';
-        chatwootUrlInput.value = localStorage.getItem('chatwootUrl') || '';
-        chatwootTokenInput.value = localStorage.getItem('chatwootToken') || '';
-        chatwootAccountIdInput.value = localStorage.getItem('chatwootAccountId') || '';
-        chatwootInboxIdInput.value = localStorage.getItem('chatwootInboxId') || '';
-        instanceInput.value = localStorage.getItem('instanceName') || '';
-        
-        chatwootAutoCreateCheck.checked = localStorage.getItem('chatwootAutoCreate') !== 'false';
-        chatwootReopenConversationCheck.checked = localStorage.getItem('chatwootReopenConversation') !== 'false';
-        chatwootSignMsgCheck.checked = localStorage.getItem('chatwootSignMsg') !== 'false';
-        chatwootConversationPendingCheck.checked = localStorage.getItem('chatwootConversationPending') !== 'false';
-      };
-
        const loadConfigFromURL = () => {
         const params = new URLSearchParams(window.location.search);
         const config = params.get('config');
@@ -258,26 +166,8 @@
         }
       };
 
-      settingsForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        localStorage.setItem('apiBaseUrl', apiUrlInput.value.trim());
-        localStorage.setItem('apiKey', apiKeyInput.value.trim());
-        localStorage.setItem('chatwootUrl', chatwootUrlInput.value.trim());
-        localStorage.setItem('chatwootToken', chatwootTokenInput.value.trim());
-        localStorage.setItem('chatwootAccountId', chatwootAccountIdInput.value.trim());
-        localStorage.setItem('chatwootInboxId', chatwootInboxIdInput.value.trim());
-        localStorage.setItem('chatwootNameInbox', document.getElementById('chatwoot-name-inbox')?.value.trim() || '');
-        localStorage.setItem('chatwootAutoCreate', chatwootAutoCreateCheck.checked);
-        localStorage.setItem('chatwootReopenConversation', chatwootReopenConversationCheck.checked);
-        localStorage.setItem('chatwootSignMsg', chatwootSignMsgCheck.checked);
-        localStorage.setItem('chatwootConversationPending', chatwootConversationPendingCheck.checked);
-        closeModal(settingsModal);
-        updateStatusDisplay('success', 'Configurações salvas!');
-        setTimeout(() => document.getElementById('status-display').classList.add('hidden'), 3000);
-      });
-
       // --- LÓGICA PRINCIPAL DA APLICAÇÃO ---
-      const updateStatusDisplay = (type, message) => {
+      const updateStatusDisplay = (type, message, sticky = false) => {
           const statusDisplay = document.getElementById('status-display');
           const colors = {
               success: { bg: 'bg-green-100 dark:bg-green-900', border: 'border-green-300 dark:border-green-700', text: 'text-green-800 dark:text-green-200', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>' },
@@ -287,82 +177,93 @@
           const c = colors[type];
           statusDisplay.innerHTML = `<div class="${c.bg} ${c.border} rounded-lg p-4"><div class="flex items-center justify-center"><svg class="h-5 w-5 ${c.text} mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">${c.icon}</svg><p class="${c.text} text-sm font-medium">${message}</p></div></div>`;
           statusDisplay.classList.remove('hidden');
+
+          if (!sticky) {
+              setTimeout(() => {
+                  if (statusDisplay.innerHTML.includes(message)) {
+                      statusDisplay.classList.add('hidden');
+                  }
+              }, 4000);
+          }
       };
       
-      const validateInputs = (checkChatwoot = false) => {
+      const validateInputs = () => {
           if (!localStorage.getItem('apiBaseUrl') || !localStorage.getItem('apiKey')) {
               updateStatusDisplay('error', 'Configuração da API não encontrada. Use o link de configuração.');
               return false;
           }
-          if (!instanceInput.value) {
-              updateStatusDisplay('error', 'Nome da instância não configurado. Use o link de configuração.');
-              return false;
-          }
-          if (checkChatwoot && (!localStorage.getItem('chatwootUrl') || !localStorage.getItem('chatwootToken') || !localStorage.getItem('chatwootAccountId') || !localStorage.getItem('chatwootInboxId'))) {
-              updateStatusDisplay('error', 'Configurações do Chatwoot incompletas. Use o link de configuração.');
-              return false;
-          }
           return true;
       };
+
+      const startPairingCountdown = () => {
+          clearInterval(countdownInterval);
+          let timeLeft = 300; // 5 minutos
+          pairingCountdownEl.textContent = 'Este código expira em 5:00';
+          
+          countdownInterval = setInterval(() => {
+              timeLeft--;
+              const minutes = Math.floor(timeLeft / 60);
+              const seconds = timeLeft % 60;
+              pairingCountdownEl.textContent = `Este código expira em ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+              
+              if (timeLeft <= 0) {
+                  clearInterval(countdownInterval);
+                  closeModal(pairingCodeModal);
+                  updateStatusDisplay('error', 'Código de pareamento expirou. Solicite um novo.');
+              }
+          }, 1000);
+      };
       
-      const connectViaChatwoot = async () => {
-          if (!validateInputs(true)) return;
+      const getPairingCode = async () => {
+          if (!validateInputs()) return;
 
           const baseUrl = localStorage.getItem('apiBaseUrl');
           const apiKey = localStorage.getItem('apiKey');
-          const instance = instanceInput.value;
+          const phone = localStorage.getItem('phoneNumber');
           
-          updateStatusDisplay('info', 'Iniciando conexão com o Chatwoot...');
-          setTimeout(() => {
-              const statusDisplay = document.getElementById('status-display');
-              if (statusDisplay.innerHTML.includes('Iniciando conexão')) {
-                  statusDisplay.classList.add('hidden');
-              }
-          }, 4000);
+          updateStatusDisplay('info', 'Solicitando código de pareamento...');
 
           try {
-              const payload = {
-                  enabled: true,
-                  url: localStorage.getItem('chatwootUrl'),
-                  token: localStorage.getItem('chatwootToken'),
-                  accountId: localStorage.getItem('chatwootAccountId'),
-                  inboxId: localStorage.getItem('chatwootInboxId'),
-                  autoCreate: localStorage.getItem('chatwootAutoCreate') === 'true',
-                  reopenConversation: localStorage.getItem('chatwootReopenConversation') === 'true',
-                  signMsg: localStorage.getItem('chatwootSignMsg') === 'true',
-                  conversationPending: localStorage.getItem('chatwootConversationPending') === 'true'
-              };
+              const payload = { phone: phone };
               
-              const nameInbox = localStorage.getItem('chatwootNameInbox');
-              if (nameInbox && nameInbox.trim() !== '') {
-                  payload.nameInbox = nameInbox.trim();
-              }
-
-              const response = await fetch(`${baseUrl}/chatwoot/set/${instance}`, {
+              const response = await fetch(`${baseUrl}/instance/connect`, {
                   method: 'POST',
-                  headers: { 'Content-Type': 'application/json', 'apikey': apiKey },
+                  headers: { 
+                      'Content-Type': 'application/json',
+                      'apikey': apiKey // Assumindo 'apikey' como header, igual Evolution
+                  },
                   body: JSON.stringify(payload)
               });
 
               if (!response.ok) {
                  const errorData = await response.json().catch(() => ({ message: `A API retornou um erro ${response.status} sem detalhes.` }));
-                 const err = new Error(errorData.message || `Erro ${response.status} - ${response.statusText}`);
-                 err.apiResponse = errorData; 
-                 throw err;
+                 throw new Error(errorData.message || `Erro ${response.status}`);
               }
 
-              updateStatusDisplay('success', 'Conexão via Chatwoot iniciada! Verifique sua caixa de entrada.');
-              setTimeout(() => document.getElementById('status-display').classList.add('hidden'), 5000);
+              const data = await response.json();
+              
+              // Assumindo que a UAU-ZAPI retorna o código em { "code": "123-456" }
+              // Se for { "pairingCode": "..." } ou algo assim, mude aqui:
+              const code = data.code || data.pairingCode; 
+
+              if (!code) {
+                  throw new Error("API não retornou um código de pareamento.");
+              }
+
+              // Formata o código para "123-456" se ele vier como "123456"
+              let formattedCode = code.replace(/-/g, '');
+              if (formattedCode.length === 6) {
+                  formattedCode = `${formattedCode.substring(0, 3)}-${formattedCode.substring(3, 6)}`;
+              }
+              
+              pairingCodeEl.textContent = formattedCode;
+              openModal(pairingCodeModal);
+              startPairingCountdown();
+              updateStatusDisplay('success', 'Código recebido. Use-o no seu celular.', true);
 
           } catch (error) {
-              console.error("Erro detalhado na conexão Chatwoot:", error);
-              let detailedMessage = error.message; 
-              if (error.apiResponse && error.apiResponse.response && error.apiResponse.response.message) {
-                  detailedMessage = error.apiResponse.response.message.flat().join('; ');
-              } else if (error.apiResponse) {
-                  detailedMessage = JSON.stringify(error.apiResponse);
-              }
-              updateStatusDisplay('error', `Falha na API: ${detailedMessage}`);
+              console.error("Erro ao solicitar código:", error);
+              updateStatusDisplay('error', `Falha na API: ${error.message}`);
           }
       };
 
@@ -371,13 +272,14 @@
 
         const baseUrl = localStorage.getItem('apiBaseUrl');
         const apiKey = localStorage.getItem('apiKey');
-        const instance = instanceInput.value;
 
         updateStatusDisplay('info', 'Verificando status...');
 
         try {
-            const response = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
-                headers: { 'apikey': apiKey }
+            const response = await fetch(`${baseUrl}/instance/status`, {
+                headers: { 
+                    'apikey': apiKey // Assumindo 'apikey' como header, igual Evolution
+                }
             });
 
             if (!response.ok) {
@@ -386,11 +288,14 @@
             }
 
             const data = await response.json();
-            const state = data.instance.state;
+            
+            // Assumindo uma resposta similar à Evolution: { instance: { state: "..." } }
+            // Se a UAU-ZAPI retornar { "status": "..." }, mude para: const state = data.status;
+            const state = data.instance?.state || data.status; 
 
-            if (state === 'open') {
+            if (state === 'connected' || state === 'open') {
                 updateStatusDisplay('success', 'Status da Conexão: CONECTADO');
-            } else if (state === 'close') {
+            } else if (state === 'disconnected' || state === 'close') {
                 updateStatusDisplay('error', 'Status da Conexão: DESCONECTADO');
             } else {
                 updateStatusDisplay('info', `Status da Conexão: ${state}`);
@@ -399,20 +304,16 @@
             console.error("Erro ao verificar status:", error);
             updateStatusDisplay('error', `Falha ao verificar status: ${error.message}`);
         }
-    };
+      };
 
       // --- EVENT LISTENERS ---
-      connectChatwootBtn.addEventListener('click', connectViaChatwoot);
+      getPairingCodeBtn.addEventListener('click', getPairingCode);
       checkStatusBtn.addEventListener('click', checkConnectionStatus);
 
       // --- INICIALIZAÇÃO ---
       initTheme();
       loadConfigFromURL(); // Carrega do link primeiro
-      loadSettings(); // Depois carrega do localStorage
       
-      // Esconde o botão de configurações para os usuários finais
-      openSettingsBtn.style.display = 'none';
-
       if (!localStorage.getItem('tutorialSeen') && !new URLSearchParams(window.location.search).has('config')) {
         openModal(tutorialModal);
       }
@@ -420,4 +321,3 @@
     </script>
   </body>
 </html>
-
