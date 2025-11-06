@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conector Chat Beefit</title>
+    <title>Conector UAU-ZAPI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       @import url(https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap);
@@ -39,7 +39,7 @@
           </h2>
           <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
             <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">1</div><p class="ml-3"><b>Verificar Status:</b> Clique para saber se a conexão está ativa (Verde) ou inativa (Vermelho).</p></div>
-            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">2</div><p class="ml-3"><b>Solicitar Código:</b> Se estiver desconectado, Solicite código de pareamento Um código aparecerá na tela.</p></div>
+            <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">2</div><p class="ml-3"><b>Solicitar Código:</b> Se estiver desconectado, clique aqui. Um código aparecerá na tela.</p></div>
             <div class="flex items-start"><div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold">3</div><p class="ml-3">No seu celular, vá em <b>WhatsApp > Aparelhos Conectados > Conectar com número de telefone</b> e digite o código.</p></div>
           </div>
           <button id="close-tutorial" class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg">Entendi!</button>
@@ -56,13 +56,13 @@
                 </button>
               <div class="flex-1 flex justify-center items-center gap-2">
                  <svg class="h-8 w-8 text-green-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.35 3.45 16.86L2.06 21.94L7.31 20.55C8.76 21.33 10.37 21.79 12.04 21.79C17.5 21.79 21.95 17.34 21.95 11.88C21.95 9.27 20.92 6.8 19.13 4.99C17.34 3.2 14.88 2.18 12.23 2.02L12.04 2M12.04 3.65C16.56 3.65 20.3 7.39 20.3 11.91C20.3 16.43 16.56 20.14 12.04 20.14C10.53 20.14 9.09 19.72 7.85 19L7.22 18.65L3.8 19.78L4.95 16.45L4.57 15.79C3.85 14.58 3.48 13.2 3.48 11.88C3.48 7.42 7.06 3.65 12.04 3.65M9.42 6.55L8.48 6.55L6.96 11.96L8.53 11.96L8.94 10.59H11.41L11.82 11.96L13.39 11.96L11.87 6.55H10.93L9.42 6.55M10.18 9.59L10.88 7.42L11.53 9.59H10.18Z"/></svg>
-                 <span class="text-xl font-bold text-gray-800 dark:text-white">Conector Chat</span>
+                 <span class="text-xl font-bold text-gray-800 dark:text-white">Conector UAU-ZAPI</span>
               </div>
                 <button id="theme-toggle" title="Alternar tema" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600">
                     <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                 </button>
             </div>
-            <p class="text-gray-600 dark:text-gray-300 text-sm">Ferramenta de Conexão</p>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">Ferramenta de Conexão UAU-ZAPI</p>
             <div class="mt-4 w-16 h-1 bg-blue-500 mx-auto rounded-full"></div>
           </header>
           
@@ -78,6 +78,13 @@
           </div>
 
           <div id="status-display" class="hidden mt-6"></div>
+          
+          <!-- Debug Info -->
+          <div id="debug-info" class="mt-6 p-3 bg-blue-50 dark:bg-blue-900 rounded-lg hidden">
+            <p class="text-xs font-semibold text-blue-800 dark:text-blue-200 mb-1">🔍 Debug - Configuração Carregada:</p>
+            <div class="text-xs text-blue-700 dark:text-blue-300 font-mono space-y-1" id="debug-content"></div>
+          </div>
+          
            <footer class="mt-8 pt-4 border-t border-gray-100 dark:border-gray-700 text-center"><p class="text-xs text-gray-500 dark:text-gray-400">Integração com UAU-ZAPI</p></footer>
         </div>
       </div>
@@ -148,23 +155,87 @@
         else setTheme(systemPrefersDark ? 'dark' : 'light');
       };
 
+      // --- DECODIFICAÇÃO BASE64 SEGURA ---
+      function safeBase64Decode(str) {
+        try {
+          // Restaura caracteres especiais do Base64 URL-safe
+          let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+          // Adiciona padding se necessário
+          while (base64.length % 4) {
+            base64 += '=';
+          }
+          // Decodifica Base64 para bytes UTF-8
+          const binaryString = atob(base64);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          const decoded = new TextDecoder().decode(bytes);
+          return decoded;
+        } catch (error) {
+          console.error('Erro ao decodificar Base64:', error);
+          return null;
+        }
+      }
+
       // --- GERENCIAMENTO DE CONFIGURAÇÕES ---
-       const loadConfigFromURL = () => {
+      const loadConfigFromURL = () => {
         const params = new URLSearchParams(window.location.search);
-        const config = params.get('config');
-        if (config) {
+        const configParam = params.get('config');
+        
+        if (configParam) {
           try {
-            const decodedConfig = JSON.parse(atob(config));
+            const decodedJson = safeBase64Decode(configParam);
+            if (!decodedJson) {
+              throw new Error('Falha na decodificação Base64');
+            }
+            
+            const decodedConfig = JSON.parse(decodedJson);
+            
+            // Salva no localStorage
             for (const key in decodedConfig) {
               localStorage.setItem(key, decodedConfig[key]);
             }
+            
+            // Mostra debug
+            showDebugInfo(decodedConfig);
             updateStatusDisplay('success', 'Configuração carregada com sucesso!');
-            history.replaceState(null, '', window.location.pathname); // Limpa a URL
+            
+            // Limpa a URL
+            history.replaceState(null, '', window.location.pathname);
           } catch (e) {
-            updateStatusDisplay('error', 'Falha ao carregar configuração do link.');
+            console.error('Erro ao carregar config:', e);
+            updateStatusDisplay('error', 'Falha ao carregar configuração do link. Verifique o link gerado.');
+          }
+        } else {
+          // Verifica se já tem config salva
+          const savedUrl = localStorage.getItem('apiBaseUrl');
+          const savedKey = localStorage.getItem('apiKey');
+          const savedPhone = localStorage.getItem('phoneNumber');
+          
+          if (savedUrl && savedKey && savedPhone) {
+            showDebugInfo({
+              apiBaseUrl: savedUrl,
+              apiKey: savedKey,
+              phoneNumber: savedPhone
+            });
           }
         }
       };
+
+      // --- DEBUG INFO ---
+      function showDebugInfo(config) {
+        const debugDiv = document.getElementById('debug-info');
+        const debugContent = document.getElementById('debug-content');
+        
+        debugContent.innerHTML = `
+          <div><strong>API URL:</strong> ${config.apiBaseUrl}</div>
+          <div><strong>Token:</strong> ${config.apiKey.substring(0, 8)}...${config.apiKey.substring(config.apiKey.length - 4)}</div>
+          <div><strong>Telefone:</strong> ${config.phoneNumber}</div>
+        `;
+        
+        debugDiv.classList.remove('hidden');
+      }
 
       // --- LÓGICA PRINCIPAL DA APLICAÇÃO ---
       const updateStatusDisplay = (type, message, sticky = false) => {
@@ -175,7 +246,7 @@
               info: { bg: 'bg-blue-100 dark:bg-blue-900', border: 'border-blue-300 dark:border-blue-700', text: 'text-blue-800 dark:text-blue-200', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>' }
           };
           const c = colors[type];
-          statusDisplay.innerHTML = `<div class="${c.bg} ${c.border} rounded-lg p-4"><div class="flex items-center justify-center"><svg class="h-5 w-5 ${c.text} mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">${c.icon}</svg><p class="${c.text} text-sm font-medium">${message}</p></div></div>`;
+          statusDisplay.innerHTML = `<div class="${c.bg} ${c.border} border rounded-lg p-4"><div class="flex items-center justify-center"><svg class="h-5 w-5 ${c.text} mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">${c.icon}</svg><p class="${c.text} text-sm font-medium">${message}</p></div></div>`;
           statusDisplay.classList.remove('hidden');
 
           if (!sticky) {
@@ -188,10 +259,16 @@
       };
       
       const validateInputs = () => {
-          if (!localStorage.getItem('apiBaseUrl') || !localStorage.getItem('apiKey')) {
-              updateStatusDisplay('error', 'Configuração da API não encontrada. Use o link de configuração.');
+          const apiBaseUrl = localStorage.getItem('apiBaseUrl');
+          const apiKey = localStorage.getItem('apiKey');
+          const phoneNumber = localStorage.getItem('phoneNumber');
+          
+          if (!apiBaseUrl || !apiKey || !phoneNumber) {
+              updateStatusDisplay('error', 'Configuração ausente. Use o link de configuração fornecido pelo administrador.');
               return false;
           }
+          
+          console.log('✓ Configuração validada:', { apiBaseUrl, apiKey: apiKey.substring(0, 10) + '...', phoneNumber });
           return true;
       };
 
@@ -226,34 +303,45 @@
           try {
               const payload = { phone: phone };
               
+              console.log('→ POST', `${baseUrl}/instance/connect`);
+              console.log('→ Headers:', { 'Content-Type': 'application/json', 'Accept': 'application/json', 'token': apiKey.substring(0, 10) + '...' });
+              console.log('→ Body:', payload);
+              
               const response = await fetch(`${baseUrl}/instance/connect`, {
                   method: 'POST',
                   headers: { 
                       'Content-Type': 'application/json',
-                      'apikey': apiKey // Assumindo 'apikey' como header, igual Evolution
+                      'Accept': 'application/json',
+                      'token': apiKey  // ✅ CORRIGIDO: agora usa 'token' minúsculo
                   },
                   body: JSON.stringify(payload)
               });
 
+              console.log('← Response status:', response.status);
+
               if (!response.ok) {
                  const errorData = await response.json().catch(() => ({ message: `A API retornou um erro ${response.status} sem detalhes.` }));
+                 console.error('← Erro da API:', errorData);
                  throw new Error(errorData.message || `Erro ${response.status}`);
               }
 
               const data = await response.json();
+              console.log('← Response data:', data);
               
-              // Assumindo que a UAU-ZAPI retorna o código em { "code": "123-456" }
-              // Se for { "pairingCode": "..." } ou algo assim, mude aqui:
-              const code = data.code || data.pairingCode; 
+              // A UAU-ZAPI pode retornar o código em diferentes formatos
+              const code = data.code || data.pairingCode || data.pairing_code;
 
               if (!code) {
-                  throw new Error("API não retornou um código de pareamento.");
+                  console.error('Resposta completa:', data);
+                  throw new Error("API não retornou um código de pareamento. Verifique a resposta no console.");
               }
 
               // Formata o código para "123-456" se ele vier como "123456"
               let formattedCode = code.replace(/-/g, '');
               if (formattedCode.length === 6) {
                   formattedCode = `${formattedCode.substring(0, 3)}-${formattedCode.substring(3, 6)}`;
+              } else if (formattedCode.length === 8) {
+                  formattedCode = `${formattedCode.substring(0, 4)}-${formattedCode.substring(4, 8)}`;
               }
               
               pairingCodeEl.textContent = formattedCode;
@@ -268,7 +356,7 @@
       };
 
       const checkConnectionStatus = async () => {
-        if (!validateInputs(false)) return;
+        if (!validateInputs()) return;
 
         const baseUrl = localStorage.getItem('apiBaseUrl');
         const apiKey = localStorage.getItem('apiKey');
@@ -276,29 +364,37 @@
         updateStatusDisplay('info', 'Verificando status...');
 
         try {
+            console.log('→ GET', `${baseUrl}/instance/status`);
+            console.log('→ Headers:', { 'Accept': 'application/json', 'token': apiKey.substring(0, 10) + '...' });
+            
             const response = await fetch(`${baseUrl}/instance/status`, {
+                method: 'GET',
                 headers: { 
-                    'apikey': apiKey // Assumindo 'apikey' como header, igual Evolution
+                    'Accept': 'application/json',
+                    'token': apiKey  // ✅ CORRIGIDO: agora usa 'token' minúsculo
                 }
             });
 
+            console.log('← Response status:', response.status);
+
             if (!response.ok) {
                 const errorData = await response.json().catch(()=> ({}));
+                console.error('← Erro da API:', errorData);
                 throw new Error(errorData.message || `A API retornou um erro ${response.status}`);
             }
 
             const data = await response.json();
+            console.log('← Response data:', data);
             
-            // Assumindo uma resposta similar à Evolution: { instance: { state: "..." } }
-            // Se a UAU-ZAPI retornar { "status": "..." }, mude para: const state = data.status;
-            const state = data.instance?.state || data.status; 
+            // A UAU-ZAPI pode retornar em diferentes formatos
+            const state = data.instance?.state || data.status || data.state;
 
-            if (state === 'connected' || state === 'open') {
-                updateStatusDisplay('success', 'Status da Conexão: CONECTADO');
-            } else if (state === 'disconnected' || state === 'close') {
-                updateStatusDisplay('error', 'Status da Conexão: DESCONECTADO');
+            if (state === 'connected' || state === 'open' || state === 'CONNECTED') {
+                updateStatusDisplay('success', '✓ Status da Conexão: CONECTADO', true);
+            } else if (state === 'disconnected' || state === 'close' || state === 'DISCONNECTED') {
+                updateStatusDisplay('error', '✗ Status da Conexão: DESCONECTADO', true);
             } else {
-                updateStatusDisplay('info', `Status da Conexão: ${state}`);
+                updateStatusDisplay('info', `Status da Conexão: ${state}`, true);
             }
         } catch (error) {
             console.error("Erro ao verificar status:", error);
@@ -312,10 +408,10 @@
 
       // --- INICIALIZAÇÃO ---
       initTheme();
-      loadConfigFromURL(); // Carrega do link primeiro
+      loadConfigFromURL();
       
       if (!localStorage.getItem('tutorialSeen') && !new URLSearchParams(window.location.search).has('config')) {
-        openModal(tutorialModal);
+        setTimeout(() => openModal(tutorialModal), 500);
       }
     });
     </script>
