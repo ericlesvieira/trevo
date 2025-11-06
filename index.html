@@ -312,7 +312,7 @@
                   headers: { 
                       'Content-Type': 'application/json',
                       'Accept': 'application/json',
-                      'token': apiKey  // ✅ CORRIGIDO: agora usa 'token' minúsculo
+                      'token': apiKey
                   },
                   body: JSON.stringify(payload)
               });
@@ -371,7 +371,7 @@
                 method: 'GET',
                 headers: { 
                     'Accept': 'application/json',
-                    'token': apiKey  // ✅ CORRIGIDO: agora usa 'token' minúsculo
+                    'token': apiKey
                 }
             });
 
@@ -384,14 +384,43 @@
             }
 
             const data = await response.json();
-            console.log('← Response data:', data);
+            console.log('← Response data completa:', data);
             
-            // A UAU-ZAPI pode retornar em diferentes formatos
-            const state = data.instance?.state || data.status || data.state;
+            // Extrai o status de múltiplos formatos possíveis
+            let state = null;
+            
+            // Tenta diferentes caminhos onde o status pode estar
+            if (data.instance && typeof data.instance === 'object') {
+                state = data.instance.state || data.instance.status;
+            }
+            
+            if (!state) {
+                state = data.status || data.state || data.connected;
+            }
+            
+            // Se for booleano, converte para string
+            if (typeof state === 'boolean') {
+                state = state ? 'connected' : 'disconnected';
+            }
+            
+            // Se for objeto, tenta extrair informação útil
+            if (typeof state === 'object') {
+                console.warn('Status retornou um objeto:', state);
+                state = JSON.stringify(state);
+            }
 
-            if (state === 'connected' || state === 'open' || state === 'CONNECTED') {
+            console.log('→ Status interpretado:', state);
+
+            if (!state) {
+                throw new Error('API não retornou um status válido. Veja o console para detalhes.');
+            }
+
+            // Normaliza para lowercase para comparação
+            const stateLower = String(state).toLowerCase();
+
+            if (stateLower.includes('connect') || stateLower === 'open') {
                 updateStatusDisplay('success', '✓ Status da Conexão: CONECTADO', true);
-            } else if (state === 'disconnected' || state === 'close' || state === 'DISCONNECTED') {
+            } else if (stateLower.includes('disconnect') || stateLower === 'close') {
                 updateStatusDisplay('error', '✗ Status da Conexão: DESCONECTADO', true);
             } else {
                 updateStatusDisplay('info', `Status da Conexão: ${state}`, true);
